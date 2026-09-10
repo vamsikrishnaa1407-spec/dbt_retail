@@ -1,0 +1,24 @@
+name: 'retail_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'retail_analytics'
+
+model-paths: ["models"]
+seed-paths:  ["seeds"]
+test-paths:  ["tests"]
+docs-paths:  ["docs"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  retail_analytics:
+    staging:
+      +schema: retail
+      +database: STAGING_DB
+      +materialized: table
+    marts:
+      +schema: retail
+      +database: MARTS_DB
+      +materialized: table
