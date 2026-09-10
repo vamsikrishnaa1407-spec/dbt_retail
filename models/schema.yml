@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer master from CRM joined with segment details (PostgreSQL via ADF → Snowflake RAW)"
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: email
+        tests: [unique, not_null]
+      - name: segment_name
+        description: "NEW / BRONZE / SILVER / GOLD / PLATINUM"
+      - name: full_name
+        description: "first_name || last_name"
+      - name: loyalty_tier
+        description: "Uppercased loyalty tier"
+      - name: discount_rate
+        description: "Segment discount rate from customer_segments"
+      - name: lifetime_value
+        description: "NULL coalesced to 0"
+
+  - name: stg_customer_addresses
+    description: "Cleaned billing/shipping addresses with customer region enrichment"
+    columns:
+      - name: address_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: postcode_clean
+        description: "Postcode with spaces removed, uppercased"
+      - name: category_level
+        description: "top_level | sub_category"
+
+  - name: stg_categories
+    description: "Product category hierarchy with parent name resolved"
+    columns:
+      - name: category_id
+        tests: [unique, not_null]
+      - name: parent_category_name
+        description: "NULL for top-level categories"
+      - name: category_level
+        description: "top_level | sub_category"
+
+  - name: stg_orders
+    description: "Online orders with line item totals (MySQL via ADF → Snowflake RAW)"
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: order_date
+        description: "Date portion of the original timestamp"
+      - name: status
+        description: "delivered / processing / shipped (cancelled excluded)"
+      - name: item_count
+        description: "Number of distinct line items in the order"
+      - name: total_amount
+
+  - name: stg_products
+    description: "Product catalogue with category name and computed margin (MySQL via ADF → Snowflake RAW)"
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: sku
+        tests: [unique, not_null]
+      - name: category_name
+        description: "Resolved from stg_categories"
+      - name: margin_pct
+        description: "(price - cost) / price * 100, rounded to 2dp"
+
+  - name: stg_campaigns
+    description: "Marketing campaigns with aggregated response counts"
+    columns:
+      - name: campaign_id
+        tests: [unique, not_null]
+      - name: total_responses
+        description: "Count of all response events"
+      - name: total_purchases
+        description: "Count of purchase response_type events"
+      - name: revenue_attributed
+        description: "Sum of revenue_attributed from campaign_responses"
+      - name: roi_pct
+        description: "(revenue_attributed - spend) / spend * 100"
+
+  - name: mart_revenue
+    description: "Daily revenue aggregated by region, channel, and loyalty tier"
+    columns:
+      - name: revenue_date
+      - name: region
+      - name: total_revenue
+        description: "Sum of total_amount for non-cancelled orders"
+      - name: total_orders
+
+  - name: mart_customer_ltv
+    description: "Per-customer lifetime value with segment and order history"
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: ltv_segment
+        description: "HIGH (>2000) / MED (>500) / LOW"
+      - name: total_spend
+      - name: total_orders
+
+  - name: mart_product_performance
+    description: "Product sales with margin, category rank, and address-region breakdown"
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: rank_in_category
+        description: "1 = best-selling in category by revenue"
+      - name: margin_pct
+
+  - name: mart_campaign_roi
+    description: "Campaign ROI with conversion rate and cost per conversion"
+    columns:
+      - name: campaign_id
+        tests: [unique, not_null]
+      - name: roi_pct
+        description: "(revenue_attributed - spend) / spend * 100"
+      - name: cost_per_conversion
+        description: "spend / total_purchases — NULL if no purchases"
+      - name: conversion_rate_pct

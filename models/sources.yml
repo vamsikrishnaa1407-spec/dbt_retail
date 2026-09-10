@@ -1,0 +1,141 @@
+version: 2
+
+sources:
+  - name: crm
+    database: RAW_DB
+    schema: crm
+    description: "CRM data landed from PostgreSQL via ADF pipeline"
+    tables:
+      - name: customer_segments
+        description: "Customer tier definitions — 5 segments (NEW, BRONZE, SILVER, GOLD, PLATINUM)"
+        columns:
+          - name: segment_id
+            tests: [unique, not_null]
+          - name: segment_name
+            tests: [unique, not_null]
+          - name: discount_rate
+          - name: priority_support
+
+      - name: customers
+        description: "Customer master from PostgreSQL CRM — 500 rows"
+        columns:
+          - name: customer_id
+            tests: [unique, not_null]
+          - name: segment_id
+            tests: [not_null]
+          - name: email
+            tests: [unique, not_null]
+          - name: loyalty_tier
+          - name: region
+          - name: acquisition_channel
+          - name: lifetime_value
+          - name: customer_since
+          - name: is_active
+
+      - name: customer_addresses
+        description: "Billing and shipping addresses — 1-2 per customer"
+        columns:
+          - name: address_id
+            tests: [unique, not_null]
+          - name: customer_id
+            tests: [not_null]
+          - name: address_type
+          - name: city
+          - name: postcode
+          - name: is_default
+
+      - name: campaigns
+        description: "Marketing campaigns — 50 rows across channels and types"
+        columns:
+          - name: campaign_id
+            tests: [unique, not_null]
+          - name: target_segment_id
+          - name: channel
+          - name: campaign_type
+          - name: start_date
+          - name: end_date
+          - name: budget
+          - name: spend
+          - name: status
+
+      - name: campaign_responses
+        description: "Customer responses to campaigns — open, click, purchase, unsubscribe"
+        columns:
+          - name: response_id
+            tests: [unique, not_null]
+          - name: campaign_id
+            tests: [not_null]
+          - name: customer_id
+            tests: [not_null]
+          - name: response_type
+          - name: revenue_attributed
+
+  - name: ecommerce
+    database: RAW_DB
+    schema: ecommerce
+    description: "E-commerce data landed from MySQL via ADF pipeline"
+    tables:
+      - name: categories
+        description: "Product category hierarchy — 10 categories (5 top-level, 5 sub)"
+        columns:
+          - name: category_id
+            tests: [unique, not_null]
+          - name: category_name
+            tests: [not_null]
+          - name: parent_category_id
+          - name: slug
+            tests: [unique, not_null]
+          - name: is_active
+
+      - name: products
+        description: "Product catalogue — 20 SKUs across Clothing, Footwear, Sports, Beauty"
+        columns:
+          - name: product_id
+            tests: [unique, not_null]
+          - name: category_id
+            tests: [not_null]
+          - name: sku
+            tests: [unique, not_null]
+          - name: product_name
+          - name: price
+          - name: cost
+          - name: stock_qty
+          - name: is_active
+
+      - name: customers
+        description: "Online customer accounts from MySQL — 150 rows"
+        columns:
+          - name: customer_id
+            tests: [unique, not_null]
+          - name: email
+            tests: [unique, not_null]
+          - name: loyalty_tier
+          - name: region
+          - name: registration_date
+          - name: is_active
+
+      - name: orders
+        description: "Online orders — 300 rows, status delivered/shipped/processing/cancelled"
+        columns:
+          - name: order_id
+            tests: [unique, not_null]
+          - name: customer_id
+            tests: [not_null]
+          - name: order_date
+          - name: status
+          - name: total_amount
+          - name: payment_method
+
+      - name: order_items
+        description: "Line items per order — 600 rows (FK → orders, products)"
+        columns:
+          - name: item_id
+            tests: [unique, not_null]
+          - name: order_id
+            tests: [not_null]
+          - name: product_id
+            tests: [not_null]
+          - name: quantity
+          - name: unit_price
+          - name: discount_amount
+          - name: line_total
