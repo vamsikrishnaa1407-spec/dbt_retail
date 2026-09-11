@@ -30,7 +30,7 @@ ranked AS (
         p.product_id,
         p.sku,
         p.product_name,
-        p.category,
+        p.category_name,
         COALESCE(s.units_sold, 0)           AS units_sold,
         COALESCE(s.total_revenue, 0)        AS total_revenue,
         COALESCE(s.avg_selling_price, p.price) AS avg_selling_price,

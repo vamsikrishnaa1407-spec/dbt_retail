@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: crm
-    database: RAW_DB
+    database: crm
     schema: crm
     description: "CRM data landed from PostgreSQL via ADF pipeline"
     tables:
@@ -71,7 +71,7 @@ sources:
           - name: revenue_attributed
 
   - name: ecommerce
-    database: RAW_DB
+    database: ecommerce
     schema: ecommerce
     description: "E-commerce data landed from MySQL via ADF pipeline"
     tables:
