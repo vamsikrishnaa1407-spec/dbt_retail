@@ -11,7 +11,7 @@ response_agg AS (
         campaign_id,
         COUNT(*)                                                AS total_responses,
         SUM(CASE WHEN response_type = 'purchase' THEN 1 ELSE 0 END) AS purchases,
-        SUM(revenue_attr)                                       AS revenue_attributed
+        SUM(revenue_attributed) AS revenue_attributed
     FROM {{ source('crm', 'campaign_responses') }}
     GROUP BY campaign_id
 ),
@@ -22,7 +22,7 @@ joined AS (
         c.campaign_name,
         c.channel,
         c.campaign_type,
-        c.target_segment,
+        c.TARGET_SEGMENT_ID,
         c.start_date,
         c.end_date,
         c.budget,

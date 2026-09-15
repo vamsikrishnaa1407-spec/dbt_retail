@@ -30,13 +30,13 @@ ranked AS (
         p.product_id,
         p.sku,
         p.product_name,
-        p.category,
+        p.category_name,
         COALESCE(s.units_sold, 0)           AS units_sold,
         COALESCE(s.total_revenue, 0)        AS total_revenue,
         COALESCE(s.avg_selling_price, p.price) AS avg_selling_price,
         p.margin_pct,
         ROW_NUMBER() OVER (
-            PARTITION BY p.category
+            PARTITION BY p.category_name
             ORDER BY COALESCE(s.total_revenue, 0) DESC
         )                                   AS rank_in_category,
         p.is_active,

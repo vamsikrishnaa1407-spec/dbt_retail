@@ -18,7 +18,7 @@ items_agg AS (
 
 joined AS (
     SELECT
-        o.id                                    AS order_id,
+        o.order_id                              AS order_id,
         o.customer_id,
         CAST(o.order_date AS DATE)              AS order_date,
         o.status,
@@ -26,12 +26,14 @@ joined AS (
         COALESCE(ia.total_qty, 0)               AS total_qty,
         COALESCE(ia.items_subtotal, 0)          AS subtotal,
         o.total_amount,
-        o.currency,
+        o.payment_method,
+        o.shipping_city,
+        o.discount_code,
         o.created_at,
         CURRENT_TIMESTAMP()                     AS _dbt_loaded_at,
         'ecommerce.orders'                      AS _source
     FROM orders o
-    LEFT JOIN items_agg ia ON o.id = ia.order_id
+    LEFT JOIN items_agg ia ON o.order_id = ia.order_id
     WHERE o.status != 'cancelled'
 )
 

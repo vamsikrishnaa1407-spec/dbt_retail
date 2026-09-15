@@ -6,12 +6,12 @@ retail_analytics:
   outputs:
     dev:
       type: snowflake
-      account: "{{ env_var('SNOW_ACCOUNT') }}"          # e.g. xy12345.eu-west-1
-      user: "{{ env_var('SNOW_USER') }}"
-      password: "{{ env_var('SNOW_PASS') }}"
-      role: SYSADMIN
-      warehouse: RETAIL_WH
+      account: VZHHPYL-OS14253         # e.g. xy12345.eu-west-1
+      user: rajesharex
+      password: Rajesh12345678
+      role: ACCOUNTADMIN
+      warehouse: COMPUTE_WH
       database: STAGING_DB                              # dbt writes here by default
-      schema: retail
+      schema: RETAIL
       threads: 4
       client_session_keep_alive: false
