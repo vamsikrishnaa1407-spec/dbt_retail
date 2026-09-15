@@ -12,7 +12,7 @@ roi AS (
         campaign_name,
         channel,
         campaign_type,
-        target_segment,
+        target_segment_id,
         start_date,
         end_date,
         budget,

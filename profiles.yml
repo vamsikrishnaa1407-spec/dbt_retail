@@ -6,7 +6,7 @@ retail_analytics:
   outputs:
     dev:
       type: snowflake
-      account: OS14253         # e.g. xy12345.eu-west-1
+      account: VZHHPYL-OS14253         # e.g. xy12345.eu-west-1
       user: rajesharex
       password: Rajesh12345678
       role: ACCOUNTADMIN

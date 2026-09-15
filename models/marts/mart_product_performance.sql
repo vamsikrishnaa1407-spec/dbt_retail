@@ -36,7 +36,7 @@ ranked AS (
         COALESCE(s.avg_selling_price, p.price) AS avg_selling_price,
         p.margin_pct,
         ROW_NUMBER() OVER (
-            PARTITION BY p.category
+            PARTITION BY p.category_name
             ORDER BY COALESCE(s.total_revenue, 0) DESC
         )                                   AS rank_in_category,
         p.is_active,
